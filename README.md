@@ -19,38 +19,15 @@ cd "your_method"
 Some details of where the dataset is found or how the dataset will be generated
 
 2. Install dependencies (for example)
-- Python 2.7
-- PyTorch 1.1.0
-- nltk
-- easydict
-- tqdm
-- tensorboardX
+- Python
+- PyTorch
+- sentence_transformers
 
 ### Training and Inference
-We give examples on how to perform training and inference with "your_method".
 
+Execute file "roberta_train.py"
 
-1. "your_method" training
-
-The general training command is:
-```
-bash scripts/train.sh
-```
-
-To train our "your_method" model on "dataset":
-```
-bash scripts/train.sh anet
-```
-
-2. "your_github_url" test
-
-The general test command is:
-```
-bash scripts/test.sh
-```
-
-The results should be comparable with the results we present at Table "number" of the paper. 
-E.g., "your_results".
+The trained model is saved in "public/model/"
 
 ## Citations
 If you find this code useful for your research, consider cite our paper:
