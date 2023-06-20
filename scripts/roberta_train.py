@@ -74,7 +74,7 @@ def generate_train_data():
     queries = []
     labels = []
 
-    for _, data in enumerate(train_data['documentRelations'][:1000]):
+    for _, data in enumerate(train_data['documentRelations']):
         text = synopses[data[1]]
         text = simple_preprocess_text(text)
         query = simple_preprocess_text(data[0])
