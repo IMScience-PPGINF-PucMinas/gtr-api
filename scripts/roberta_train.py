@@ -39,7 +39,7 @@ synopses = anime_data['content']  # array com os textos
 MODEL_NAME = 'distilroberta-base'
 
 word_embedding_model = models.Transformer(
-    MODEL_NAME, max_seq_length=256)
+    MODEL_NAME, max_seq_length=160)
 
 pooling_model = models.Pooling(
     word_embedding_model.get_word_embedding_dimension(), pooling_mode='mean')
@@ -141,7 +141,7 @@ def train():
     # train_loss = losses.CosineSimilarityLoss(model)
 
     epochs = 4
-    evaluation_steps = 10
+    evaluation_steps = 1000
     warmup_steps = int(len(train_dataloader) *
                        epochs * 0.1)  # 10% of train data
 
