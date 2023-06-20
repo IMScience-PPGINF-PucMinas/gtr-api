@@ -5,7 +5,7 @@ import json
 import torch
 from torch.utils.data import DataLoader
 from sentence_transformers import SentenceTransformer, InputExample, losses, models
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from sentence_transformers.evaluation import BinaryClassificationEvaluator
 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -70,13 +70,21 @@ def generate_train_data():
     '''
 
     train_examples = []
+    texts = []
+    queries = []
+    labels = []
 
-    for _, data in enumerate(train_data['documentRelations']):
+    for _, data in enumerate(train_data['documentRelations'][:1000]):
         text = synopses[data[1]]
         text = simple_preprocess_text(text)
         query = simple_preprocess_text(data[0])
         # convert the label to float
         label = float(data[2])
+
+        # add the text and query to the arrays
+        texts.append(text)
+        queries.append(query)
+        labels.append(label)
 
         train_examples.append(
             InputExample(texts=[query, text], label=label))
@@ -87,7 +95,7 @@ def generate_train_data():
     print("train examples len: ", len(train_examples))
     print("train example: ", train_examples[0])
 
-    return train_examples
+    return train_examples, texts, queries, labels
 
 
 def evaluate(test_samples, model_path):
@@ -95,8 +103,8 @@ def evaluate(test_samples, model_path):
         Evaluate the model
     '''
     sts_model = SentenceTransformer(model_path)
-    test_evaluator = EmbeddingSimilarityEvaluator.from_input_examples(
-        test_samples, name='roberta-test')
+    test_evaluator = BinaryClassificationEvaluator.from_input_examples(
+        test_samples, name='roberta-test', write_csv=True)
     test_evaluator(sts_model, output_path=model_path)
 
 
@@ -104,7 +112,7 @@ def train():
     '''
         Train the model
     '''
-    train_examples = generate_train_data()
+    train_examples = generate_train_data()[0]
 
     # randomize the train data
     random.shuffle(train_examples)
@@ -133,14 +141,14 @@ def train():
     # train_loss = losses.CosineSimilarityLoss(model)
 
     epochs = 4
-    evaluation_steps = 1000
+    evaluation_steps = 10
     warmup_steps = int(len(train_dataloader) *
                        epochs * 0.1)  # 10% of train data
 
     print("warmup steps: ", warmup_steps)
 
-    evaluator = EmbeddingSimilarityEvaluator.from_input_examples(
-        dev_samples, name='roberta-dev')
+    evaluator = BinaryClassificationEvaluator.from_input_examples(
+        dev_samples, name='roberta-dev', write_csv=True)
 
     model.to(DEVICE)
     # Tune the model
