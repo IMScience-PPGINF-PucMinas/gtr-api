@@ -148,7 +148,7 @@ def train():
         (train_dataloader, train_loss)], epochs=epochs, warmup_steps=warmup_steps,
         optimizer_params={'lr': 1e-5}, evaluator=evaluator, evaluation_steps=evaluation_steps,
         output_path=roberta_trained_model_path, save_best_model=True, checkpoint_path=roberta_trained_model_checkpoint_path,
-        show_progress_bar=True, checkpoint_save_steps=len(train_samples))
+        show_progress_bar=True, checkpoint_save_steps=evaluation_steps)
 
     # Evaluate the model
     evaluate(test_samples, roberta_trained_model_path)
