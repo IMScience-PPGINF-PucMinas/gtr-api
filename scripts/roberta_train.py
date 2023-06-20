@@ -134,7 +134,7 @@ def train():
     print("dev samples len: ", len(dev_samples))
     print("test samples len: ", len(test_samples))
 
-    # Define train dataset, the dataloader and the train loss
+    # Define the dataloader and the train loss
     train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=24)
 
     train_loss = losses.MultipleNegativesRankingLoss(model)
