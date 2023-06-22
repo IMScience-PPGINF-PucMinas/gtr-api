@@ -126,7 +126,7 @@ def train():
     test_len = int(len(train_examples) * 0.2)
     train_len = len(train_examples) - dev_len - test_len
 
-    train_samples = train_examples[:train_len]
+    train_samples = train_examples[:len(train_examples)]
     dev_samples = train_examples[train_len:train_len + dev_len]
     test_samples = train_examples[train_len + dev_len:]
 
@@ -134,14 +134,14 @@ def train():
     print("dev samples len: ", len(dev_samples))
     print("test samples len: ", len(test_samples))
 
-    # Define the dataloader and the train loss
+    # Define train dataset, the dataloader and the train loss
     train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=24)
 
     train_loss = losses.MultipleNegativesRankingLoss(model)
     # train_loss = losses.CosineSimilarityLoss(model)
 
-    epochs = 4
-    evaluation_steps = 1000
+    epochs = 10
+    evaluation_steps = 800
     warmup_steps = int(len(train_dataloader) *
                        epochs * 0.1)  # 10% of train data
 
