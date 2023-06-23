@@ -76,7 +76,7 @@ def generate_train_data():
 
     for _, data in enumerate(train_data['documentRelations']):
         text = synopses[data[1]]
-        title = titles[data[1]]
+        title = simple_preprocess_text(titles[data[1]])
         text = simple_preprocess_text(title + ' ' + text)
         query = simple_preprocess_text(data[0])
         # convert the label to float
@@ -86,6 +86,9 @@ def generate_train_data():
         texts.append(text)
         queries.append(query)
         labels.append(label)
+
+        train_examples.append(
+            InputExample(texts=[title, text], label=label))
 
         train_examples.append(
             InputExample(texts=[query, text], label=label))
