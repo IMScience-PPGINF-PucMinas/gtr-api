@@ -76,7 +76,8 @@ def generate_train_data():
 
     for _, data in enumerate(train_data['documentRelations']):
         text = synopses[data[1]]
-        text = simple_preprocess_text(text)
+        title = titles[data[1]]
+        text = simple_preprocess_text(title + ' ' + text)
         query = simple_preprocess_text(data[0])
         # convert the label to float
         label = float(data[2])
@@ -159,7 +160,7 @@ def train():
         show_progress_bar=True, checkpoint_save_steps=evaluation_steps)
 
     # Evaluate the model
-    evaluate(test_samples, roberta_trained_model_path)
+    # evaluate(test_samples, roberta_trained_model_path)
 
 
 train()
