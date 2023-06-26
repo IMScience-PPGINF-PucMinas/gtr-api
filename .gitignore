@@ -1,3 +1,4 @@
-public/checkpoint/roberta_trained_model_checkpoint
+public/checkpoint/roberta_trained_model_checkpoint/*
 public/model/roberta_trained_model
-public/results/
+public/results/*
+results/*
