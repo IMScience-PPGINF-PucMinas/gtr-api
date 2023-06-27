@@ -238,10 +238,10 @@ def calculate_metrics(relevant_docs, retrieved_docs, K=10):
     macro_true_labels, macro_pred_labels = get_true_pred_macro_labels(
         reference_docs, retrieved_docs)
 
-    print(f"binary true labels: {binary_true_labels}")
-    print(f"binary pred labels: {binary_pred_labels}")
-    print(f"macro true labels: {macro_true_labels}")
-    print(f"macro pred labels: {macro_pred_labels}")
+    # print(f"binary true labels: {binary_true_labels}")
+    # print(f"binary pred labels: {binary_pred_labels}")
+    # print(f"macro true labels: {macro_true_labels}")
+    # print(f"macro pred labels: {macro_pred_labels}")
 
     eval_metrics["precision"] = calculate_precision(
         reference_docs, retrieved_docs)

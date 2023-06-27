@@ -63,7 +63,7 @@ def find_similar(model, query_text, sinopses_embeddings, k=10):
     '''
     processed_query = simple_preprocess_text(query_text)
 
-    print("processed_query: ", processed_query)
+    # print("processed_query: ", processed_query)
 
     query_embedding = model.encode([processed_query])
 
@@ -116,7 +116,7 @@ def generate_eval_data():
 
 
 def evaluate(model, eval_data):
-    print("evaluate")
+    # print("evaluate")
 
     cleaned_synopses = [simple_preprocess_text(synopsis)
                         for synopsis in synopses]
@@ -126,7 +126,7 @@ def evaluate(model, eval_data):
 
     computed_f1 = []
 
-    print("computing f1")
+    # print("computing f1")
 
     for _, data in tqdm(enumerate(eval_data)):
         query = data['query']
@@ -139,8 +139,8 @@ def evaluate(model, eval_data):
 
         computed_f1.append(f1)
 
-    print("computed_f1: ", computed_f1)
-    print("mean: ", np.mean(computed_f1))
+    # print("computed_f1: ", computed_f1)
+    # print("mean: ", np.mean(computed_f1))
 
     return np.mean(computed_f1), computed_f1
 
@@ -150,11 +150,11 @@ def evaluate_metrics(model, eval_data, version):
                         for synopsis in synopses]
 
     sinopses_embeddings = model.encode(
-        cleaned_synopses, show_progress_bar=True)
+        cleaned_synopses, show_progress_bar=True, )
 
     evaluated_metrics = []
 
-    print("Evaluating...", len(eval_data))
+    # print("Evaluating...", len(eval_data))
 
     for k in [1, 3, 5, 7, 10]:
         current_evaluated_metrics = {
@@ -168,23 +168,23 @@ def evaluate_metrics(model, eval_data, version):
             "bleu": [],
         }
 
-        print("k: ", k)
+        # print("k: ", k)
 
         for _, curr_eval_data in tqdm(enumerate(eval_data)):
-            print("title: ", curr_eval_data['title'])
+            # print("title: ", curr_eval_data['title'])
 
             curr_queries = curr_eval_data['sentences']
 
             for curr_query in curr_queries:
-                print("curr_query: ", curr_query)
+                # print("curr_query: ", curr_query)
 
                 relevant_doc_ids = curr_eval_data['relatedDocs']
 
                 top_idxes = find_similar(
                     model, curr_query, sinopses_embeddings, k)
 
-                print("top_idxes: ", top_idxes)
-                print("relevant_doc_ids: ", relevant_doc_ids)
+                # print("top_idxes: ", top_idxes)
+                # print("relevant_doc_ids: ", relevant_doc_ids)
 
                 metrics = calculate_metrics(relevant_doc_ids, top_idxes, k)
 
@@ -208,7 +208,7 @@ def evaluate_metrics(model, eval_data, version):
         average_model_metrics = calculate_mean_average_model_evaluation_metrics(
             current_evaluated_metrics)
 
-        print("average_model_metrics: ", average_model_metrics)
+        # print("average_model_metrics: ", average_model_metrics)
 
         evaluated_metrics.append({
             "k": k,
@@ -224,44 +224,8 @@ def evaluate_metrics(model, eval_data, version):
 
 
 def main():
-    model_number = [
-        '20000',
-        '20800',
-        '21600',
-        '22400',
-        '23200',
-        '24000',
-        '24800',
-        '25600',
-        '26400',
-        '27200',
-        '28000',
-        '28800',
-        '29600',
-        '30400',
-        '31200',
-        '32000',
-        '32800',
-        '33600',
-        '34400',
-        '35200',
-        '36000',
-        '36800',
-        '37600',
-        '38400',
-        '39200',
-        '40000',
-        '40800',
-        '41600',
-        '42400',
-        '43200',
-        '44000',
-        '44800',
-        '45600',
-        '46400',
-        '47200',
-        '47310'
-    ]
+    roberta_trained_model_path = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), '..', 'public', 'checkpoint', 'roberta_trained_model_checkpoint'))
 
     # eval_data = generate_eval_data()
     eval_data_path = os.path.abspath(os.path.join(
@@ -270,27 +234,31 @@ def main():
     with open(eval_data_path, 'r', encoding='utf-8') as f:
         eval_data = json.load(f)
 
-    print("eval_data len: ", len(eval_data))
+    if (os.path.exists(roberta_trained_model_path)):
 
-    for number in model_number:
-        roberta_trained_model_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', 'public', 'checkpoint', 'roberta_trained_model_checkpoint', number))
+        model_numbers = os.listdir(roberta_trained_model_path)
 
-        sts_model = SentenceTransformer(roberta_trained_model_path)
+        for number in model_numbers:
+            print("number: ", number)
 
-        sts_model.to(DEVICE)
+            roberta_check_model_path = os.path.abspath(os.path.join(
+                os.path.dirname(__file__), '..', 'public', 'checkpoint', 'roberta_trained_model_checkpoint', number))
 
-        print("model: ", number)
+            sts_model = SentenceTransformer(roberta_check_model_path)
 
-        evaluate_metrics(sts_model, eval_data, number)
-        # evaluation = evaluate_metrics(sts_model, eval_data)
+            sts_model.to(DEVICE)
 
-        # out_path = os.path.abspath(os.path.join(
-        #     os.path.dirname(__file__), '..', 'public', f"evaluation_{number}.txt"))
+            # print("model: ", number)
 
-        # with open(out_path, 'w', encoding='utf-8') as f:
-        #     f.write(f"evaluation: {evaluation[0]}\n")
-        #     f.write(f"computed_f1: {evaluation[1]}\n")
+            evaluate_metrics(sts_model, eval_data, number)
+            # evaluation = evaluate_metrics(sts_model, eval_data)
+
+            # out_path = os.path.abspath(os.path.join(
+            #     os.path.dirname(__file__), '..', 'public', f"evaluation_{number}.txt"))
+
+            # with open(out_path, 'w', encoding='utf-8') as f:
+            #     f.write(f"evaluation: {evaluation[0]}\n")
+            #     f.write(f"computed_f1: {evaluation[1]}\n")
 
 
 main()
